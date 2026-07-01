@@ -16,4 +16,13 @@ describe("renderer styles", () => {
     expect(styles).toContain(".fund-profit span.loss");
     expect(styles).toContain(".fund-profit span.flat");
   });
+
+  it("keeps stock detail table constrained to vertical scrolling only", () => {
+    const stockTableBlock = styles.match(/\.stock-table\s*\{[^}]*\}/)?.[0] ?? "";
+    const stockDialogBodyBlock = styles.match(/\.stock-dialog-body\s*\{[^}]*\}/)?.[0] ?? "";
+
+    expect(stockTableBlock).not.toContain("min-width:");
+    expect(stockDialogBodyBlock).toContain("overflow-x: hidden;");
+    expect(stockDialogBodyBlock).toContain("overflow-y: auto;");
+  });
 });

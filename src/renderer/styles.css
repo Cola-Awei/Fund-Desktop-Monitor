@@ -471,7 +471,8 @@ footer {
 
 .stock-dialog-body {
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .detail-state {
@@ -498,16 +499,16 @@ footer {
 }
 
 .stock-table {
-  min-width: 530px;
+  width: 100%;
   font-variant-numeric: tabular-nums;
 }
 
 .stock-table-head,
 .stock-table-row {
   display: grid;
-  grid-template-columns: minmax(132px, 1.3fr) 76px 86px 104px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.75fr) minmax(0, 0.88fr) minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .stock-table-head {
@@ -520,6 +521,13 @@ footer {
   font-size: 11px;
 }
 
+.stock-table-head span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .stock-table-head span:not(:first-child),
 .stock-table-row span:not(.stock-name) {
   text-align: right;
@@ -529,7 +537,14 @@ footer {
   min-height: 48px;
   border-top: 1px solid #31343d;
   color: #dce2ec;
-  font-size: 12px;
+  font-size: 11px;
+}
+
+.stock-table-row span:not(.stock-name) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stock-name {
