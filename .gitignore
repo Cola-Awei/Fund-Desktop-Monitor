@@ -1,0 +1,12 @@
+.superpowers/
+node_modules/
+dist/
+dist-electron/
+release/
+out/
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
