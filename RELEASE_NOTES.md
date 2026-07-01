@@ -25,13 +25,13 @@
 
 ### 验证
 
-- `npm run package`
-- 69 个自动化测试通过
+- `npm run package:installer`
+- 71 个自动化测试通过
 
-### Windows 目录版
+### Windows 安装版
 
-打包产物路径：
+推荐下载 GitHub Release 附件中的安装程序：
 
 ```text
-release/win-unpacked/Fund Desktop Monitor.exe
+Fund Desktop Monitor Setup 0.1.0.exe
 ```
