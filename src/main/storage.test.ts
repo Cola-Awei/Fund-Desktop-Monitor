@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -39,5 +39,13 @@ describe("HoldingStore", () => {
     await expect(store.load()).resolves.toEqual([]);
     const files = await readFile(path.join(dir, "holdings.json.corrupt"), "utf8");
     expect(files).toBe("{bad json");
+  });
+
+  it("rejects non-missing filesystem read errors", async () => {
+    await mkdir(path.join(dir, "holdings.json"));
+    const store = new HoldingStore(dir);
+    await expect(store.load()).rejects.toMatchObject({
+      code: expect.not.stringMatching(/^ENOENT$/),
+    });
   });
 });

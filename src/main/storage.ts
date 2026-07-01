@@ -15,16 +15,21 @@ export class HoldingStore implements HoldingStorage {
   }
 
   async load(): Promise<Holding[]> {
+    let content: string;
     try {
-      const content = await readFile(this.filePath, "utf8");
-      const parsed = JSON.parse(content);
-      return Array.isArray(parsed) ? parsed : [];
+      content = await readFile(this.filePath, "utf8");
     } catch (error) {
       const code = (error as NodeJS.ErrnoException).code;
       if (code === "ENOENT") return [];
-      await rename(this.filePath, path.join(this.userDataPath, "holdings.json.corrupt")).catch(
-        () => undefined,
-      );
+      throw error;
+    }
+
+    try {
+      const parsed = JSON.parse(content);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      if (!(error instanceof SyntaxError)) throw error;
+      await rename(this.filePath, path.join(this.userDataPath, "holdings.json.corrupt"));
       return [];
     }
   }
