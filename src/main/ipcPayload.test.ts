@@ -15,17 +15,17 @@ describe("safeNormalizeHoldingInput", () => {
 
   it("returns relevant field errors for malformed field types", () => {
     const result = safeNormalizeHoldingInput({
-      mode: "totalAmount",
+      mode: "costPrice",
       fundCode: 123456,
       shares: null,
-      totalAmount: 100,
+      costPrice: 100,
     });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.fundCode).toBe("Fund code must be exactly 6 digits.");
       expect(result.errors.shares).toBe("Holding shares must be greater than 0.");
-      expect(result.errors.totalAmount).toBe("Total invested amount must be greater than 0.");
+      expect(result.errors.costPrice).toBe("Cost unit price must be greater than 0.");
     }
   });
 
@@ -40,7 +40,6 @@ describe("safeNormalizeHoldingInput", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.costPrice).toBe("Cost unit price must be greater than 0.");
-      expect(result.errors.totalAmount).toBe("Total invested amount must be greater than 0.");
     }
   });
 
@@ -60,7 +59,7 @@ describe("safeNormalizeHoldingInput", () => {
     }
   });
 
-  it("normalizes current amount and profit input payloads", () => {
+  it("rejects removed current amount and profit input payloads", () => {
     const result = safeNormalizeHoldingInput({
       mode: "profitAmount",
       fundCode: "000001",
@@ -69,10 +68,9 @@ describe("safeNormalizeHoldingInput", () => {
       currentPrice: 1.6547,
     });
 
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.holding.shares).toBeCloseTo(1000, 6);
-      expect(result.holding.costPrice).toBeCloseTo(1.5, 6);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.costPrice).toBe("Cost unit price must be greater than 0.");
     }
   });
 });

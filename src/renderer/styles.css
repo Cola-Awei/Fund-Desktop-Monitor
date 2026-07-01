@@ -283,6 +283,18 @@ input:focus-visible {
   font-size: 11px;
 }
 
+.fund-profit span.gain {
+  color: #ff6969;
+}
+
+.fund-profit span.loss {
+  color: #4cc38a;
+}
+
+.fund-profit span.flat {
+  color: #dce2ec;
+}
+
 .row-remove {
   width: 24px;
   height: 24px;
@@ -361,35 +373,6 @@ footer {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-}
-
-.mode-switch {
-  flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
-  padding: 4px;
-  margin-bottom: 12px;
-  border-radius: 9px;
-  background: #18191e;
-  border: 1px solid #30323b;
-}
-
-.mode-switch button {
-  min-height: 30px;
-  height: auto;
-  padding: 6px 4px;
-  border-radius: 7px;
-  background: transparent;
-  color: #8f98aa;
-  font-size: 12px;
-  line-height: 1.2;
-  transition: background 160ms ease, color 160ms ease;
-}
-
-.mode-switch button.active {
-  background: #374054;
-  color: #eef3ff;
 }
 
 .dialog-body {

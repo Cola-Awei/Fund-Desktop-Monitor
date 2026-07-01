@@ -29,62 +29,18 @@ describe("normalizeHoldingInput", () => {
     }
   });
 
-  it("converts total amount mode into cost price", () => {
-    const result = normalizeHoldingInput({
-      mode: "totalAmount",
-      fundCode: "000001",
-      shares: "3200",
-      totalAmount: "5184"
-    });
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.holding.costPrice).toBe(1.62);
-    }
-  });
-
-  it("converts current amount and profit mode into shares and cost price", () => {
-    const result = normalizeHoldingInput({
-      mode: "profitAmount",
-      fundCode: "000001",
-      currentAmount: "1654.70",
-      holdingProfit: "154.70",
-      currentPrice: 1.6547
-    });
-
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.holding.shares).toBeCloseTo(1000, 6);
-      expect(result.holding.costPrice).toBeCloseTo(1.5, 6);
-    }
-  });
-
   it("returns field errors for invalid input", () => {
     const result = normalizeHoldingInput({
-      mode: "totalAmount",
+      mode: "costPrice",
       fundCode: "abc",
       shares: "0",
-      totalAmount: ""
+      costPrice: ""
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.fundCode).toBeTruthy();
       expect(result.errors.shares).toBeTruthy();
-      expect(result.errors.totalAmount).toBeTruthy();
-    }
-  });
-
-  it("rejects current amount mode when calculated investment is not positive", () => {
-    const result = normalizeHoldingInput({
-      mode: "profitAmount",
-      fundCode: "000001",
-      currentAmount: "100",
-      holdingProfit: "100",
-      currentPrice: 1
-    });
-
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.errors.holdingProfit).toBeTruthy();
+      expect(result.errors.costPrice).toBeTruthy();
     }
   });
 
@@ -101,14 +57,14 @@ describe("normalizeHoldingInput", () => {
     }
 
     const exponentResult = normalizeHoldingInput({
-      mode: "totalAmount",
+      mode: "costPrice",
       fundCode: "000001",
       shares: "3200",
-      totalAmount: "1e3"
+      costPrice: "1e3"
     });
     expect(exponentResult.ok).toBe(false);
     if (!exponentResult.ok) {
-      expect(exponentResult.errors.totalAmount).toBeTruthy();
+      expect(exponentResult.errors.costPrice).toBeTruthy();
     }
   });
 

@@ -83,7 +83,7 @@ app.whenReady().then(async () => {
     console.error("Failed to load persisted portfolio. Storage was not overwritten.", error);
   }
 
-  registerIpc(service, () => mainWindow, refreshAndBroadcast, fetchFundQuote);
+  registerIpc(service, () => mainWindow, refreshAndBroadcast);
   createWindow();
   appTray = createAppTray({
     getWindow: () => mainWindow,

@@ -76,19 +76,14 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "添加基金" }));
 
     expect(screen.getByText("添加持仓")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "成本单价" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "总投入金额" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "按收益反推" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "成本单价" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "总投入金额" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "按收益反推" })).not.toBeInTheDocument();
     expect(screen.getByLabelText("基金代码")).toBeInTheDocument();
     expect(screen.getByLabelText("持有份额")).toBeInTheDocument();
     expect(screen.getByLabelText("持仓成本单价")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "按收益反推" }));
-
-    expect(screen.queryByLabelText("持有份额")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("目前金额")).toBeInTheDocument();
-    expect(screen.getByLabelText("持有收益")).toBeInTheDocument();
-    expect(screen.getByText("保存时会先获取当前净值/估值，再自动计算份额和成本单价。")).toBeInTheDocument();
+    expect(screen.queryByLabelText("目前金额")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("持有收益")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
   });
 });
