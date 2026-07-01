@@ -57,17 +57,20 @@ function refreshAndBroadcast() {
   return refreshPromise;
 }
 
+function scheduleRefresh() {
+  void refreshAndBroadcast().catch((error) => {
+    console.error("Scheduled refresh failed", error);
+  });
+}
+
 app.whenReady().then(async () => {
   try {
     service = new PortfolioService(new HoldingStore(app.getPath("userData")), fetchFundQuote);
-    registerIpc(service, () => mainWindow, refreshAndBroadcast);
   } catch (error) {
     console.error("Failed to initialize portfolio service.", error);
     createWindow();
     return;
   }
-
-  createWindow();
 
   try {
     await service.load();
@@ -75,13 +78,16 @@ app.whenReady().then(async () => {
     console.error("Failed to load persisted portfolio. Storage was not overwritten.", error);
   }
 
+  registerIpc(service, () => mainWindow, refreshAndBroadcast);
+  createWindow();
+
   try {
     await refreshAndBroadcast();
   } catch (error) {
     console.error("Failed to refresh portfolio during startup.", error);
   }
 
-  refreshTimer = setInterval(() => void refreshAndBroadcast(), 30_000);
+  refreshTimer = setInterval(scheduleRefresh, 30_000);
 });
 
 app.on("before-quit", () => {
