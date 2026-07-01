@@ -1,4 +1,4 @@
-import type { FundQuote, Holding, HoldingProfitView } from "./types";
+import type { FundQuote, Holding, HoldingProfitView } from "./types.js";
 
 export function getCurrentPrice(quote: FundQuote | null) {
   if (!quote) return null;

@@ -1,11 +1,14 @@
-import type { Holding, HoldingInput, HoldingInputErrors, NormalizeHoldingResult } from "./types";
+import type { Holding, HoldingInput, HoldingInputErrors, NormalizeHoldingResult } from "./types.js";
 
 export function validateFundCode(fundCode: string) {
   return /^\d{6}$/.test(fundCode.trim());
 }
 
 function parsePositiveNumber(value: string | undefined) {
-  const number = Number(value);
+  if (value === undefined) return null;
+  const trimmed = value.trim();
+  if (!/^\d+(?:\.\d+)?$/.test(trimmed)) return null;
+  const number = Number(trimmed);
   return Number.isFinite(number) && number > 0 ? number : null;
 }
 

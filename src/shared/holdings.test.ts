@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeHoldingInput, validateFundCode } from "./holdings";
+import { normalizeHoldingInput, validateFundCode } from "./holdings.js";
 
 describe("validateFundCode", () => {
   it("accepts exactly six digits", () => {
@@ -54,6 +54,62 @@ describe("normalizeHoldingInput", () => {
       expect(result.errors.fundCode).toBeTruthy();
       expect(result.errors.shares).toBeTruthy();
       expect(result.errors.totalAmount).toBeTruthy();
+    }
+  });
+
+  it("rejects hexadecimal and exponent numeric input", () => {
+    const hexResult = normalizeHoldingInput({
+      mode: "costPrice",
+      fundCode: "000001",
+      shares: "0x10",
+      costPrice: "1.62"
+    });
+    expect(hexResult.ok).toBe(false);
+    if (!hexResult.ok) {
+      expect(hexResult.errors.shares).toBeTruthy();
+    }
+
+    const exponentResult = normalizeHoldingInput({
+      mode: "totalAmount",
+      fundCode: "000001",
+      shares: "3200",
+      totalAmount: "1e3"
+    });
+    expect(exponentResult.ok).toBe(false);
+    if (!exponentResult.ok) {
+      expect(exponentResult.errors.totalAmount).toBeTruthy();
+    }
+  });
+
+  it("rejects blank numeric input", () => {
+    const result = normalizeHoldingInput({
+      mode: "costPrice",
+      fundCode: "000001",
+      shares: "   ",
+      costPrice: ""
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.shares).toBeTruthy();
+      expect(result.errors.costPrice).toBeTruthy();
+    }
+  });
+
+  it("uses injected time for created and updated timestamps", () => {
+    const now = new Date("2026-07-01T12:34:56.789Z");
+    const result = normalizeHoldingInput(
+      {
+        mode: "costPrice",
+        fundCode: "000001",
+        shares: "3200",
+        costPrice: "1.62"
+      },
+      now
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.holding.createdAt).toBe("2026-07-01T12:34:56.789Z");
+      expect(result.holding.updatedAt).toBe("2026-07-01T12:34:56.789Z");
     }
   });
 });
