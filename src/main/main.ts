@@ -1,15 +1,18 @@
 import { app, BrowserWindow } from "electron";
+import type { Tray } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchFundQuote } from "./fundApi.js";
 import { broadcastSnapshot, registerIpc } from "./ipc.js";
 import { PortfolioService } from "./portfolioService.js";
 import { HoldingStore } from "./storage.js";
+import { createAppTray } from "./tray.js";
 import type { PortfolioSnapshot } from "../shared/types.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let mainWindow: BrowserWindow | null = null;
+let appTray: Tray | null = null;
 let refreshTimer: NodeJS.Timeout | null = null;
 let refreshPromise: Promise<PortfolioSnapshot> | null = null;
 let service: PortfolioService;
@@ -80,6 +83,10 @@ app.whenReady().then(async () => {
 
   registerIpc(service, () => mainWindow, refreshAndBroadcast);
   createWindow();
+  appTray = createAppTray({
+    getWindow: () => mainWindow,
+    refreshNow: refreshAndBroadcast
+  });
 
   try {
     await refreshAndBroadcast();
