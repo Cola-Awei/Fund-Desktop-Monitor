@@ -44,21 +44,24 @@ export class PortfolioService {
 
   async refreshAll() {
     this.refreshing = true;
-    await Promise.all(
-      this.holdings.map(async (holding) => {
-        try {
-          const quote = await this.fetchQuote(holding.fundCode);
-          this.quoteByCode.set(holding.fundCode, quote);
-          this.errorByCode.delete(holding.fundCode);
-        } catch (error) {
-          this.errorByCode.set(
-            holding.fundCode,
-            error instanceof Error ? error.message : "Refresh failed",
-          );
-        }
-      }),
-    );
-    this.refreshing = false;
+    try {
+      await Promise.all(
+        this.holdings.map(async (holding) => {
+          try {
+            const quote = await this.fetchQuote(holding.fundCode);
+            this.quoteByCode.set(holding.fundCode, quote);
+            this.errorByCode.delete(holding.fundCode);
+          } catch (error) {
+            this.errorByCode.set(
+              holding.fundCode,
+              error instanceof Error ? error.message : "Refresh failed",
+            );
+          }
+        }),
+      );
+    } finally {
+      this.refreshing = false;
+    }
     return this.snapshot();
   }
 

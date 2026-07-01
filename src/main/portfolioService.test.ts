@@ -54,4 +54,49 @@ describe("PortfolioService", () => {
     expect(snapshot.holdings[0].status).toBe("error");
     expect(snapshot.holdings[0].error).toBe("network down");
   });
+
+  it("reports refreshing while refresh quotes are pending", async () => {
+    let resolveQuote: (quote: FundQuote) => void;
+    const pendingQuote = new Promise<FundQuote>((resolve) => {
+      resolveQuote = resolve;
+    });
+    const service = new PortfolioService(
+      {
+        load: vi.fn().mockResolvedValue([holding]),
+        save: vi.fn().mockResolvedValue(undefined),
+      },
+      vi.fn().mockReturnValue(pendingQuote),
+    );
+
+    await service.load();
+    const refresh = service.refreshAll();
+
+    expect(service.snapshot().isRefreshing).toBe(true);
+
+    resolveQuote!(quote);
+    const snapshot = await refresh;
+
+    expect(snapshot.isRefreshing).toBe(false);
+    expect(service.snapshot().isRefreshing).toBe(false);
+  });
+
+  it("resets refreshing after unexpected refresh path exceptions", async () => {
+    const service = new PortfolioService(
+      {
+        load: vi.fn().mockResolvedValue([holding]),
+        save: vi.fn().mockResolvedValue(undefined),
+      },
+      vi.fn().mockResolvedValue(quote),
+    );
+
+    await service.load();
+    (service as unknown as { holdings: { map: () => never } }).holdings = {
+      map: () => {
+        throw new Error("unexpected refresh failure");
+      },
+    };
+
+    await expect(service.refreshAll()).rejects.toThrow("unexpected refresh failure");
+    expect((service as unknown as { refreshing: boolean }).refreshing).toBe(false);
+  });
 });
