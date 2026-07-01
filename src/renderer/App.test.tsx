@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
 
 beforeEach(() => {
@@ -19,6 +19,10 @@ beforeEach(() => {
     closeToTray: vi.fn(),
     onSnapshotUpdated: vi.fn().mockReturnValue(() => undefined)
   };
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe("App", () => {
@@ -88,6 +92,118 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
   });
 
+  it("shows current clock in the footer and marks closed estimates", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-01T16:08:30+08:00"));
+    window.fundApp.getSnapshot = vi.fn().mockResolvedValue({
+      holdings: [
+        {
+          holding: {
+            fundCode: "021528",
+            shares: 100,
+            costPrice: 5.1951,
+            createdAt: "2026-07-01T00:00:00.000Z",
+            updatedAt: "2026-07-01T00:00:00.000Z"
+          },
+          quote: {
+            fundCode: "021528",
+            name: "财通成长优选混合C",
+            jzrq: "2026-06-30",
+            dwjz: 5.5976,
+            gsz: 5.5976,
+            gszzl: -1.76,
+            gztime: "2026-07-01 15:00"
+          },
+          currentPrice: 5.5976,
+          profitLoss: -15.46,
+          status: "fresh"
+        }
+      ],
+      totalProfitLoss: -15.46,
+      latestEstimateTime: "2026-07-01 15:00",
+      isRefreshing: false
+    });
+
+    render(<App />);
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.getByText(/已闭市 15:00/)).toBeInTheDocument();
+    expect(screen.queryByText(/最近 15:00/)).not.toBeInTheDocument();
+    expect(screen.getByText(/当前 16:08/)).toBeInTheDocument();
+
+    act(() => {
+      vi.setSystemTime(new Date("2026-07-01T16:09:01+08:00"));
+      vi.advanceTimersByTime(31_000);
+    });
+
+    expect(screen.getByText(/当前 16:09/)).toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
+  it("shows immediate feedback while manually refreshing and applies the refreshed snapshot", async () => {
+    let resolveRefresh: (snapshot: Awaited<ReturnType<typeof window.fundApp.getSnapshot>>) => void = () => undefined;
+    window.fundApp.getSnapshot = vi.fn().mockResolvedValue({
+      holdings: [],
+      totalProfitLoss: 0,
+      latestEstimateTime: null,
+      isRefreshing: false
+    });
+    window.fundApp.refreshNow = vi.fn().mockReturnValue(
+      new Promise((resolve) => {
+        resolveRefresh = resolve;
+      })
+    );
+
+    render(<App />);
+
+    const refreshButton = await screen.findByRole("button", { name: "刷新" });
+    fireEvent.click(refreshButton);
+
+    expect(window.fundApp.refreshNow).toHaveBeenCalledTimes(1);
+    expect(refreshButton).toBeDisabled();
+    expect(refreshButton.querySelector("svg")).toHaveClass("is-spinning");
+    expect(screen.getByText("正在刷新...")).toBeInTheDocument();
+
+    await act(async () => {
+      resolveRefresh({
+        holdings: [
+          {
+            holding: {
+              fundCode: "021528",
+              shares: 100,
+              costPrice: 5.1951,
+              createdAt: "2026-07-01T00:00:00.000Z",
+              updatedAt: "2026-07-01T00:00:00.000Z"
+            },
+            quote: {
+              fundCode: "021528",
+              name: "财通成长优选混合C",
+              jzrq: "2026-06-30",
+              dwjz: 5.5976,
+              gsz: 5.5976,
+              gszzl: -1.76,
+              gztime: "2026-07-01 15:00"
+            },
+            currentPrice: 5.5976,
+            profitLoss: -86.37,
+            status: "fresh"
+          }
+        ],
+        totalProfitLoss: -86.37,
+        latestEstimateTime: "2026-07-01 15:00",
+        isRefreshing: false
+      });
+    });
+
+    expect(refreshButton).not.toBeDisabled();
+    expect(refreshButton.querySelector("svg")).not.toHaveClass("is-spinning");
+    expect(screen.getAllByText("-86.37")).toHaveLength(2);
+    expect(screen.getByText(/已刷新/)).toBeInTheDocument();
+  });
+
   it("opens fund stock holdings details from a fund row", async () => {
     window.fundApp.getSnapshot = vi.fn().mockResolvedValue({
       holdings: [
@@ -154,7 +270,8 @@ describe("App", () => {
     fireEvent.click(await screen.findByRole("button", { name: "查看 平安科技精选混合发起式C 持仓股票" }));
 
     expect(await screen.findByText("关联股票")).toBeInTheDocument();
-    expect(screen.getByText("截止 2026-03-31 · 对比 2025-12-31")).toBeInTheDocument();
+    expect(screen.getByText("截止 2026-03-31")).toBeInTheDocument();
+    expect(screen.queryByText(/对比 2025-12-31/)).not.toBeInTheDocument();
     expect(screen.getByText("长芯博创")).toBeInTheDocument();
     expect(screen.getByText("300548")).toBeInTheDocument();
     expect(screen.getByText("-8.63%")).toHaveClass("loss");

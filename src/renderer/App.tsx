@@ -18,14 +18,24 @@ const emptySnapshot: PortfolioSnapshot = {
   isRefreshing: false
 };
 
+function formatClockTime(date: Date) {
+  return date.toLocaleTimeString("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+}
+
 export function App() {
   const [snapshot, setSnapshot] = useState<PortfolioSnapshot>(emptySnapshot);
+  const [currentTime, setCurrentTime] = useState(() => formatClockTime(new Date()));
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedFund, setSelectedFund] = useState<HoldingProfitView | null>(null);
   const [stockHoldings, setStockHoldings] = useState<FundStockHoldings | null>(null);
   const [stockDetailLoading, setStockDetailLoading] = useState(false);
   const [stockDetailError, setStockDetailError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
   useEffect(() => {
     void window.fundApp
@@ -35,12 +45,24 @@ export function App() {
     return window.fundApp.onSnapshotUpdated(setSnapshot);
   }, []);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCurrentTime(formatClockTime(new Date()));
+    }, 30_000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   async function refreshNow() {
     try {
       setStatusMessage(null);
+      setIsManualRefreshing(true);
       setSnapshot(await window.fundApp.refreshNow());
+      setStatusMessage(`已刷新 ${formatClockTime(new Date())}`);
     } catch {
       setStatusMessage("刷新失败");
+    } finally {
+      setIsManualRefreshing(false);
     }
   }
 
@@ -106,8 +128,8 @@ export function App() {
           <button type="button" aria-label="添加基金" onClick={() => setDialogOpen(true)}>
             <Plus size={14} />
           </button>
-          <button type="button" aria-label="刷新" onClick={refreshNow}>
-            <RefreshCw size={14} className={snapshot.isRefreshing ? "is-spinning" : ""} />
+          <button type="button" aria-label="刷新" onClick={refreshNow} disabled={isManualRefreshing}>
+            <RefreshCw size={14} className={isManualRefreshing || snapshot.isRefreshing ? "is-spinning" : ""} />
           </button>
           <button
             type="button"
@@ -140,9 +162,7 @@ export function App() {
         </section>
       </section>
       <footer>
-        {statusMessage ?? (
-          <>自动刷新 · 30s · {snapshot.latestEstimateTime ? `最近 ${snapshot.latestEstimateTime.slice(11, 16)}` : "等待刷新"}</>
-        )}
+        {isManualRefreshing ? "正在刷新..." : (statusMessage ?? <>自动刷新 · 30s · 当前 {currentTime}</>)}
       </footer>
       {dialogOpen ? (
         <AddHoldingDialog

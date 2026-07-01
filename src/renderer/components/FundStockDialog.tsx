@@ -22,9 +22,7 @@ export function FundStockDialog({
   onClose,
 }: FundStockDialogProps) {
   const title = holdings?.fundName ?? fundName;
-  const dateLine = holdings
-    ? `截止 ${holdings.reportDate}${holdings.previousReportDate ? ` · 对比 ${holdings.previousReportDate}` : ""}`
-    : fundCode;
+  const dateLine = holdings ? `截止 ${holdings.reportDate}` : fundCode;
 
   return (
     <div className="dialog-backdrop" role="presentation">

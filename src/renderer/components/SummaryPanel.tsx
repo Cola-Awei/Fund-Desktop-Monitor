@@ -6,6 +6,13 @@ interface SummaryPanelProps {
   latestEstimateTime: string | null;
 }
 
+function formatEstimateStatus(latestEstimateTime: string | null) {
+  if (!latestEstimateTime) return "等待刷新";
+
+  const time = latestEstimateTime.slice(11, 16);
+  return time >= "15:00" ? `已闭市 ${time}` : `估值 ${time}`;
+}
+
 export function SummaryPanel({ totalProfitLoss, holdingCount, latestEstimateTime }: SummaryPanelProps) {
   return (
     <section className="summary-panel">
@@ -13,8 +20,7 @@ export function SummaryPanel({ totalProfitLoss, holdingCount, latestEstimateTime
       <div className="summary-line">
         <strong className={signClass(totalProfitLoss)}>{formatAmount(totalProfitLoss)}</strong>
         <small>
-          持仓 {holdingCount} 只 ·{" "}
-          {latestEstimateTime ? `估值 ${latestEstimateTime.slice(11, 16)}` : "等待刷新"}
+          持仓 {holdingCount} 只 · {formatEstimateStatus(latestEstimateTime)}
         </small>
       </div>
     </section>
