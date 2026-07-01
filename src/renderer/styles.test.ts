@@ -17,6 +17,16 @@ describe("renderer styles", () => {
     expect(dialogBlock).not.toContain("box-shadow:");
   });
 
+  it("clips dialog backdrops inside the rounded desktop window", () => {
+    const windowShellBlock = styles.match(/\.window-shell\s*\{[^}]*\}/)?.[0] ?? "";
+    const dialogBackdropBlock = styles.match(/\.dialog-backdrop\s*\{[^}]*\}/)?.[0] ?? "";
+
+    expect(windowShellBlock).toContain("position: relative;");
+    expect(dialogBackdropBlock).toContain("position: absolute;");
+    expect(dialogBackdropBlock).toContain("border-radius: inherit;");
+    expect(dialogBackdropBlock).toContain("overflow: hidden;");
+  });
+
   it("keeps fund percentage colors from being overridden by the muted row text rule", () => {
     expect(styles).toContain(".fund-profit span.gain");
     expect(styles).toContain(".fund-profit span.loss");

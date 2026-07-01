@@ -22,6 +22,7 @@ body {
 }
 
 .window-shell {
+  position: relative;
   width: 100vw;
   height: 100vh;
   min-width: 320px;
@@ -345,12 +346,14 @@ footer {
 }
 
 .dialog-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   padding: 12px;
   background: rgba(0, 0, 0, 0.56);
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .dialog {
