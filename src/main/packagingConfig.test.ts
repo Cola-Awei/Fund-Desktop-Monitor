@@ -7,4 +7,21 @@ describe("packaging config", () => {
 
     expect(config).toContain('base: "./"');
   });
+
+  it("keeps the desktop widget window user-resizable", async () => {
+    const main = await readFile("src/main/main.ts", "utf8");
+
+    expect(main).toContain("resizable: true");
+    expect(main).toContain("minWidth:");
+    expect(main).toContain("minHeight:");
+  });
+
+  it("sizes the renderer shell from the window viewport", async () => {
+    const styles = await readFile("src/renderer/styles.css", "utf8");
+
+    expect(styles).toContain("width: 100vw;");
+    expect(styles).toContain("height: 100vh;");
+    expect(styles).not.toContain("width: 390px;");
+    expect(styles).not.toContain("height: 330px;");
+  });
 });
