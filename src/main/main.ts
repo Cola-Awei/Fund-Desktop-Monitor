@@ -2,7 +2,7 @@ import { app, BrowserWindow } from "electron";
 import type { Tray } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { fetchFundQuote } from "./fundApi.js";
+import { fetchFundQuote, fetchFundStockHoldings } from "./fundApi.js";
 import { broadcastSnapshot, registerIpc } from "./ipc.js";
 import { PortfolioService } from "./portfolioService.js";
 import { HoldingStore } from "./storage.js";
@@ -83,7 +83,7 @@ app.whenReady().then(async () => {
     console.error("Failed to load persisted portfolio. Storage was not overwritten.", error);
   }
 
-  registerIpc(service, () => mainWindow, refreshAndBroadcast);
+  registerIpc(service, () => mainWindow, refreshAndBroadcast, fetchFundStockHoldings);
   createWindow();
   appTray = createAppTray({
     getWindow: () => mainWindow,

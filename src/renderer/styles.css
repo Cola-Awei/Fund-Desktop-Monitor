@@ -220,6 +220,18 @@ input:focus-visible {
   border: 1px solid #31343d;
   border-radius: 10px;
   background: #24262d;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.fund-row:hover {
+  background: #292b33;
+  border-color: #3c4050;
+}
+
+.fund-row:focus-visible {
+  outline: 2px solid #6f92c6;
+  outline-offset: 2px;
 }
 
 .fund-row.is-error {
@@ -368,6 +380,32 @@ footer {
   font-size: 14px;
 }
 
+.dialog-heading {
+  min-width: 0;
+}
+
+.dialog-heading strong,
+.dialog-heading span,
+.dialog-heading small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dialog-heading span {
+  margin-top: 4px;
+  color: #aeb6c6;
+  font-size: 12px;
+}
+
+.dialog-heading small {
+  margin-top: 4px;
+  color: #7f8798;
+  font-size: 11px;
+  font-weight: 500;
+}
+
 .dialog-close {
   width: 28px;
   height: 28px;
@@ -425,6 +463,97 @@ footer {
 .dialog-actions {
   flex: 0 0 auto;
   padding-top: 12px;
+}
+
+.stock-dialog {
+  width: min(620px, calc(100vw - 28px));
+}
+
+.stock-dialog-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.detail-state {
+  display: grid;
+  min-height: 118px;
+  place-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #8f98aa;
+  font-size: 12px;
+  text-align: center;
+}
+
+.detail-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #303340;
+  border: 1px solid #414653;
+  color: #dce2ec;
+}
+
+.stock-table {
+  min-width: 530px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stock-table-head,
+.stock-table-row {
+  display: grid;
+  grid-template-columns: minmax(132px, 1.3fr) 76px 86px 104px;
+  align-items: center;
+  gap: 10px;
+}
+
+.stock-table-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0 0 8px;
+  background: #24262d;
+  color: #8e96a8;
+  font-size: 11px;
+}
+
+.stock-table-head span:not(:first-child),
+.stock-table-row span:not(.stock-name) {
+  text-align: right;
+}
+
+.stock-table-row {
+  min-height: 48px;
+  border-top: 1px solid #31343d;
+  color: #dce2ec;
+  font-size: 12px;
+}
+
+.stock-name {
+  min-width: 0;
+}
+
+.stock-name strong,
+.stock-name small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock-name strong {
+  color: #eef2f8;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.stock-name small {
+  margin-top: 3px;
+  color: #7f8798;
+  font-size: 11px;
 }
 
 .primary-action {

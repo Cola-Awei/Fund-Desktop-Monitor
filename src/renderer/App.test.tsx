@@ -12,6 +12,7 @@ beforeEach(() => {
       isRefreshing: false
     }),
     addHolding: vi.fn(),
+    getFundStockHoldings: vi.fn(),
     removeHolding: vi.fn(),
     refreshNow: vi.fn(),
     minimize: vi.fn(),
@@ -85,5 +86,82 @@ describe("App", () => {
     expect(screen.queryByLabelText("目前金额")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("持有收益")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
+  });
+
+  it("opens fund stock holdings details from a fund row", async () => {
+    window.fundApp.getSnapshot = vi.fn().mockResolvedValue({
+      holdings: [
+        {
+          holding: {
+            fundCode: "026211",
+            shares: 1000,
+            costPrice: 2.3817,
+            createdAt: "2026-07-01T00:00:00.000Z",
+            updatedAt: "2026-07-01T00:00:00.000Z"
+          },
+          quote: {
+            fundCode: "026211",
+            name: "平安科技精选混合发起式C",
+            jzrq: "2026-06-30",
+            dwjz: 2.5028,
+            gsz: 2.436,
+            gszzl: -2.67,
+            gztime: "2026-07-01 15:00"
+          },
+          currentPrice: 2.436,
+          profitLoss: -56.09,
+          status: "fresh"
+        }
+      ],
+      totalProfitLoss: -56.09,
+      latestEstimateTime: "2026-07-01 15:00",
+      isRefreshing: false
+    });
+    window.fundApp.getFundStockHoldings = vi.fn().mockResolvedValue({
+      ok: true,
+      holdings: {
+        fundCode: "026211",
+        fundName: "平安科技精选混合发起式C",
+        reportDate: "2026-03-31",
+        previousReportDate: "2025-12-31",
+        stocks: [
+          {
+            stockCode: "300548",
+            marketCode: "0.300548",
+            stockName: "长芯博创",
+            holdingPercent: 8.99,
+            previousHoldingPercent: 4.97,
+            holdingChangePercent: 4.02,
+            isNew: false,
+            stockChangePercent: -8.63
+          },
+          {
+            stockCode: "688150",
+            marketCode: "1.688150",
+            stockName: "莱特光电",
+            holdingPercent: 8.68,
+            previousHoldingPercent: null,
+            holdingChangePercent: null,
+            isNew: true,
+            stockChangePercent: 0.85
+          }
+        ]
+      }
+    });
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "查看 平安科技精选混合发起式C 持仓股票" }));
+
+    expect(await screen.findByText("关联股票")).toBeInTheDocument();
+    expect(screen.getByText("截止 2026-03-31 · 对比 2025-12-31")).toBeInTheDocument();
+    expect(screen.getByText("长芯博创")).toBeInTheDocument();
+    expect(screen.getByText("300548")).toBeInTheDocument();
+    expect(screen.getByText("-8.63%")).toHaveClass("loss");
+    expect(screen.getByText("8.99%")).toBeInTheDocument();
+    expect(screen.getByText("+4.02%")).toHaveClass("gain");
+    expect(screen.getByText("莱特光电")).toBeInTheDocument();
+    expect(screen.getByText("新增")).toBeInTheDocument();
+    expect(window.fundApp.getFundStockHoldings).toHaveBeenCalledWith("026211");
   });
 });

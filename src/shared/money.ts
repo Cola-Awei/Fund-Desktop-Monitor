@@ -11,6 +11,11 @@ export function formatPrice(value: number | null | undefined) {
   return value.toFixed(4);
 }
 
+export function formatPercent(value: number | null | undefined) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "--";
+  return `${formatAmount(value)}%`;
+}
+
 export function signClass(value: number | null | undefined): "gain" | "loss" | "flat" {
   if (!value) return "flat";
   return value > 0 ? "gain" : "loss";

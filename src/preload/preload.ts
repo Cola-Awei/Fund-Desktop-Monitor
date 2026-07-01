@@ -5,6 +5,7 @@ import type { HoldingInput, PortfolioSnapshot } from "../shared/types.js";
 contextBridge.exposeInMainWorld("fundApp", {
   getSnapshot: () => ipcRenderer.invoke(CHANNELS.getSnapshot),
   addHolding: (input: HoldingInput) => ipcRenderer.invoke(CHANNELS.addHolding, input),
+  getFundStockHoldings: (fundCode: string) => ipcRenderer.invoke(CHANNELS.getFundStockHoldings, fundCode),
   removeHolding: (fundCode: string) => ipcRenderer.invoke(CHANNELS.removeHolding, fundCode),
   refreshNow: () => ipcRenderer.invoke(CHANNELS.refreshNow),
   minimize: () => ipcRenderer.invoke(CHANNELS.minimize),

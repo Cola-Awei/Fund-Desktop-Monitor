@@ -1,8 +1,14 @@
 import { Minus, Plus, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { HoldingInputErrors, PortfolioSnapshot } from "../shared/types.js";
+import type {
+  FundStockHoldings,
+  HoldingInputErrors,
+  HoldingProfitView,
+  PortfolioSnapshot,
+} from "../shared/types.js";
 import { AddHoldingDialog } from "./components/AddHoldingDialog.js";
 import { FundRow } from "./components/FundRow.js";
+import { FundStockDialog } from "./components/FundStockDialog.js";
 import { SummaryPanel } from "./components/SummaryPanel.js";
 
 const emptySnapshot: PortfolioSnapshot = {
@@ -15,6 +21,10 @@ const emptySnapshot: PortfolioSnapshot = {
 export function App() {
   const [snapshot, setSnapshot] = useState<PortfolioSnapshot>(emptySnapshot);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedFund, setSelectedFund] = useState<HoldingProfitView | null>(null);
+  const [stockHoldings, setStockHoldings] = useState<FundStockHoldings | null>(null);
+  const [stockDetailLoading, setStockDetailLoading] = useState(false);
+  const [stockDetailError, setStockDetailError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,6 +72,29 @@ export function App() {
     }
   }
 
+  async function openFundDetail(item: HoldingProfitView) {
+    setSelectedFund(item);
+    setStockHoldings(null);
+    await loadFundDetail(item.holding.fundCode);
+  }
+
+  async function loadFundDetail(fundCode: string) {
+    try {
+      setStockDetailLoading(true);
+      setStockDetailError(null);
+      const result = await window.fundApp.getFundStockHoldings(fundCode);
+      if (result.ok) {
+        setStockHoldings(result.holdings);
+      } else {
+        setStockDetailError(result.error);
+      }
+    } catch {
+      setStockDetailError("持仓股票读取失败");
+    } finally {
+      setStockDetailLoading(false);
+    }
+  }
+
   return (
     <main className="window-shell">
       <header className="titlebar">
@@ -96,7 +129,12 @@ export function App() {
             <p className="empty-state">暂无持仓，点击右上角添加基金。</p>
           ) : (
             snapshot.holdings.map((item) => (
-              <FundRow key={item.holding.fundCode} item={item} onRemove={removeHolding} />
+              <FundRow
+                key={item.holding.fundCode}
+                item={item}
+                onOpen={openFundDetail}
+                onRemove={removeHolding}
+              />
             ))
           )}
         </section>
@@ -111,6 +149,21 @@ export function App() {
           initialFundCode=""
           onSubmit={submitHolding}
           onClose={() => setDialogOpen(false)}
+        />
+      ) : null}
+      {selectedFund ? (
+        <FundStockDialog
+          fundName={selectedFund.quote?.name ?? selectedFund.holding.fundCode}
+          fundCode={selectedFund.holding.fundCode}
+          holdings={stockHoldings}
+          isLoading={stockDetailLoading}
+          error={stockDetailError}
+          onRetry={() => void loadFundDetail(selectedFund.holding.fundCode)}
+          onClose={() => {
+            setSelectedFund(null);
+            setStockHoldings(null);
+            setStockDetailError(null);
+          }}
         />
       ) : null}
     </main>

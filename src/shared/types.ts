@@ -35,6 +35,25 @@ export interface FundQuote {
   gztime: string;
 }
 
+export interface FundStockHolding {
+  stockCode: string;
+  marketCode: string;
+  stockName: string;
+  holdingPercent: number;
+  previousHoldingPercent: number | null;
+  holdingChangePercent: number | null;
+  isNew: boolean;
+  stockChangePercent: number | null;
+}
+
+export interface FundStockHoldings {
+  fundCode: string;
+  fundName: string;
+  reportDate: string;
+  previousReportDate: string | null;
+  stocks: FundStockHolding[];
+}
+
 export interface HoldingQuoteState {
   holding: Holding;
   quote: FundQuote | null;

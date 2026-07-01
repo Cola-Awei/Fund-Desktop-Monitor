@@ -4,14 +4,27 @@ import type { HoldingProfitView } from "../../shared/types.js";
 
 interface FundRowProps {
   item: HoldingProfitView;
+  onOpen(item: HoldingProfitView): void;
   onRemove(fundCode: string): void;
 }
 
-export function FundRow({ item, onRemove }: FundRowProps) {
+export function FundRow({ item, onOpen, onRemove }: FundRowProps) {
   const name = item.quote?.name ?? "等待刷新";
 
   return (
-    <article className={`fund-row ${item.status === "error" ? "is-error" : ""}`}>
+    <article
+      className={`fund-row ${item.status === "error" ? "is-error" : ""}`}
+      role="button"
+      tabIndex={0}
+      aria-label={`查看 ${name} 持仓股票`}
+      onClick={() => onOpen(item)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen(item);
+        }
+      }}
+    >
       <div className="fund-main">
         <strong title={name}>{name}</strong>
         <span>
@@ -32,7 +45,10 @@ export function FundRow({ item, onRemove }: FundRowProps) {
         className="row-remove"
         type="button"
         aria-label={`删除 ${item.holding.fundCode}`}
-        onClick={() => onRemove(item.holding.fundCode)}
+        onClick={(event) => {
+          event.stopPropagation();
+          onRemove(item.holding.fundCode);
+        }}
       >
         <X size={13} />
       </button>
