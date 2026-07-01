@@ -34,8 +34,8 @@ describe("PortfolioService", () => {
     await service.addHolding(holding);
     const snapshot = await service.refreshAll();
 
-    expect(snapshot.holdings[0].profitLoss).toBeCloseTo(60);
-    expect(snapshot.totalProfitLoss).toBeCloseTo(60);
+    expect(snapshot.holdings[0].profitLoss).toBeCloseTo(40);
+    expect(snapshot.totalProfitLoss).toBeCloseTo(40);
     expect(snapshot.latestEstimateTime).toBe("2026-07-01 10:33");
   });
 

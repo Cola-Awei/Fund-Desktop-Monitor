@@ -9,11 +9,18 @@ export function getCurrentPrice(quote: FundQuote | null) {
 
 export function calculateHoldingProfit(holding: Holding, quote: FundQuote | null): HoldingProfitView {
   const currentPrice = getCurrentPrice(quote);
+  const dayProfitLoss =
+    quote?.gsz === null ||
+    quote?.gsz === undefined ||
+    quote?.dwjz === null ||
+    quote?.dwjz === undefined
+      ? null
+      : (quote.gsz - quote.dwjz) * holding.shares;
   return {
     holding,
     quote,
     currentPrice,
-    profitLoss: currentPrice === null ? null : (currentPrice - holding.costPrice) * holding.shares,
+    profitLoss: dayProfitLoss,
     status: quote ? "fresh" : "idle"
   };
 }

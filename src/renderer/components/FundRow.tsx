@@ -22,7 +22,7 @@ export function FundRow({ item, onRemove }: FundRowProps) {
       </div>
       <div className="fund-profit">
         <strong className={signClass(item.profitLoss)}>{formatAmount(item.profitLoss)}</strong>
-        <span>
+        <span className={signClass(item.quote?.gszzl)}>
           {item.quote?.gszzl === null || item.quote?.gszzl === undefined
             ? "--"
             : `${formatAmount(item.quote.gszzl)}%`}

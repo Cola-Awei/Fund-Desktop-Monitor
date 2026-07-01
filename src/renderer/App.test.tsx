@@ -47,25 +47,30 @@ describe("App", () => {
             jzrq: "2026-06-30",
             dwjz: 1.637,
             gsz: 1.6547,
-            gszzl: 1.08,
+            gszzl: -2.13,
             gztime: "2026-07-01 10:33"
           },
           currentPrice: 1.6547,
-          profitLoss: 154.7,
+          profitLoss: -1066.19,
           status: "fresh"
         }
       ],
-      totalProfitLoss: 154.7,
+      totalProfitLoss: -1066.19,
       latestEstimateTime: "2026-07-01 10:33",
       isRefreshing: false
     });
 
     render(<App />);
 
-    expect(await screen.findByText("总实时盈亏")).toBeInTheDocument();
+    expect(await screen.findByText("当日实时盈亏")).toBeInTheDocument();
     expect(screen.getByText(/持仓 1 只/)).toBeInTheDocument();
     expect(screen.getByText(/估值 10:33/)).toBeInTheDocument();
     expect(screen.getByText(/000001 · 估值 1.6547 · 成本 1.5000/)).toBeInTheDocument();
+    expect(screen.getAllByText("-1066.19")).toHaveLength(2);
+    for (const amount of screen.getAllByText("-1066.19")) {
+      expect(amount).toHaveClass("loss");
+    }
+    expect(screen.getByText("-2.13%")).toHaveClass("loss");
     expect(screen.getByRole("button", { name: "删除 000001" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "添加基金" }));
