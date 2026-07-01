@@ -1,4 +1,4 @@
-import { Minus, RefreshCw } from "lucide-react";
+import { Minus, Plus, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { HoldingInputErrors, PortfolioSnapshot } from "../shared/types.js";
 import { AddHoldingDialog } from "./components/AddHoldingDialog.js";
@@ -14,7 +14,6 @@ const emptySnapshot: PortfolioSnapshot = {
 
 export function App() {
   const [snapshot, setSnapshot] = useState<PortfolioSnapshot>(emptySnapshot);
-  const [fundCode, setFundCode] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -53,7 +52,6 @@ export function App() {
       if ("snapshot" in result) {
         setSnapshot(result.snapshot);
         setDialogOpen(false);
-        setFundCode("");
         void refreshNow();
         return null;
       }
@@ -72,6 +70,9 @@ export function App() {
           基金实时监控
         </div>
         <div className="title-actions">
+          <button type="button" aria-label="添加基金" onClick={() => setDialogOpen(true)}>
+            <Plus size={14} />
+          </button>
           <button type="button" aria-label="刷新" onClick={refreshNow}>
             <RefreshCw size={14} className={snapshot.isRefreshing ? "is-spinning" : ""} />
           </button>
@@ -92,27 +93,13 @@ export function App() {
         />
         <section className="fund-list" aria-label="基金持仓">
           {snapshot.holdings.length === 0 ? (
-            <p className="empty-state">暂无持仓，请添加基金代码。</p>
+            <p className="empty-state">暂无持仓，点击右上角添加基金。</p>
           ) : (
             snapshot.holdings.map((item) => (
               <FundRow key={item.holding.fundCode} item={item} onRemove={removeHolding} />
             ))
           )}
         </section>
-        <form
-          className="add-row"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setDialogOpen(true);
-          }}
-        >
-          <input
-            placeholder="基金代码，如 000001"
-            value={fundCode}
-            onChange={(event) => setFundCode(event.target.value)}
-          />
-          <button type="submit">添加</button>
-        </form>
       </section>
       <footer>
         {statusMessage ?? (
@@ -121,7 +108,7 @@ export function App() {
       </footer>
       {dialogOpen ? (
         <AddHoldingDialog
-          initialFundCode={fundCode}
+          initialFundCode=""
           onSubmit={submitHolding}
           onClose={() => setDialogOpen(false)}
         />

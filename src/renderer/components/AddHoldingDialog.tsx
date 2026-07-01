@@ -61,29 +61,53 @@ export function AddHoldingDialog({ initialFundCode, onSubmit, onClose }: AddHold
             总投入金额
           </button>
         </div>
-        <label>
+        <label htmlFor="fund-code-input">
           基金代码
-          <input value={fundCode} onChange={(event) => setFundCode(event.target.value)} />
+          <input
+            id="fund-code-input"
+            inputMode="numeric"
+            placeholder="例如 000001"
+            value={fundCode}
+            onChange={(event) => setFundCode(event.target.value)}
+          />
         </label>
         {errors.fundCode ? <p className="field-error">{errors.fundCode}</p> : null}
-        <label>
+        <label htmlFor="shares-input">
           持有份额
-          <input value={shares} onChange={(event) => setShares(event.target.value)} />
+          <input
+            id="shares-input"
+            inputMode="decimal"
+            placeholder="例如 1000"
+            value={shares}
+            onChange={(event) => setShares(event.target.value)}
+          />
         </label>
         {errors.shares ? <p className="field-error">{errors.shares}</p> : null}
         {mode === "costPrice" ? (
           <>
-            <label>
+            <label htmlFor="cost-price-input">
               持仓成本单价
-              <input value={costPrice} onChange={(event) => setCostPrice(event.target.value)} />
+              <input
+                id="cost-price-input"
+                inputMode="decimal"
+                placeholder="例如 1.5000"
+                value={costPrice}
+                onChange={(event) => setCostPrice(event.target.value)}
+              />
             </label>
             {errors.costPrice ? <p className="field-error">{errors.costPrice}</p> : null}
           </>
         ) : (
           <>
-            <label>
+            <label htmlFor="total-amount-input">
               总投入金额
-              <input value={totalAmount} onChange={(event) => setTotalAmount(event.target.value)} />
+              <input
+                id="total-amount-input"
+                inputMode="decimal"
+                placeholder="例如 1500"
+                value={totalAmount}
+                onChange={(event) => setTotalAmount(event.target.value)}
+              />
             </label>
             {errors.totalAmount ? <p className="field-error">{errors.totalAmount}</p> : null}
           </>

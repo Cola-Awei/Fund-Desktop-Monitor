@@ -21,11 +21,13 @@ beforeEach(() => {
 });
 
 describe("App", () => {
-  it("renders the monitor title and add controls", async () => {
+  it("renders the monitor title and top-right add control", async () => {
     render(<App />);
+
     expect(await screen.findByText("基金实时监控")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("基金代码，如 000001")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "添加" })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("基金代码，如 000001")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加基金" })).toBeInTheDocument();
+    expect(screen.getByText("暂无持仓，点击右上角添加基金。")).toBeInTheDocument();
   });
 
   it("renders Chinese copy in holding rows and add dialog", async () => {
@@ -66,14 +68,14 @@ describe("App", () => {
     expect(screen.getByText(/000001 · 估值 1.6547 · 成本 1.5000/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "删除 000001" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "添加" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加基金" }));
 
     expect(screen.getByText("添加持仓")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "成本单价" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "总投入金额" })).toBeInTheDocument();
-    expect(screen.getByText("基金代码")).toBeInTheDocument();
-    expect(screen.getByText("持有份额")).toBeInTheDocument();
-    expect(screen.getByText("持仓成本单价")).toBeInTheDocument();
+    expect(screen.getByLabelText("基金代码")).toBeInTheDocument();
+    expect(screen.getByLabelText("持有份额")).toBeInTheDocument();
+    expect(screen.getByLabelText("持仓成本单价")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
   });
 });

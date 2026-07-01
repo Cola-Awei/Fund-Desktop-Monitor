@@ -286,14 +286,6 @@ input:focus-visible {
   border-radius: 7px;
 }
 
-.add-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 70px;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-.add-row input,
 .dialog input {
   min-width: 0;
   height: 36px;
@@ -304,15 +296,6 @@ input:focus-visible {
   caret-color: #8aa8d8;
 }
 
-.add-row input {
-  padding: 0 11px;
-}
-
-.add-row input::placeholder {
-  color: #666f80;
-}
-
-.add-row button,
 .primary-action {
   height: 36px;
   border-radius: 8px;
@@ -323,7 +306,6 @@ input:focus-visible {
   transition: background 160ms ease;
 }
 
-.add-row button:hover,
 .primary-action:hover:not(:disabled) {
   background: #5f78a0;
 }
@@ -411,6 +393,10 @@ footer {
   width: 100%;
   margin-top: 6px;
   padding: 0 10px;
+}
+
+.dialog input::placeholder {
+  color: #666f80;
 }
 
 .field-error {
