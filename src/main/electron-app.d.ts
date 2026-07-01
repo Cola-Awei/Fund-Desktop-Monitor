@@ -7,9 +7,3 @@ declare global {
     }
   }
 }
-
-declare module "electron" {
-  interface App {
-    isQuitting?: boolean;
-  }
-}
