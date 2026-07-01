@@ -23,4 +23,10 @@ describe("parseFundQuoteJsonp", () => {
       "Invalid fund quote response",
     );
   });
+
+  it("throws on null payloads", () => {
+    expect(() => parseFundQuoteJsonp("jsonpgz(null);")).toThrow(
+      "Invalid fund quote response",
+    );
+  });
 });

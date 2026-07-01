@@ -10,15 +10,20 @@ export function parseFundQuoteJsonp(responseText: string): FundQuote {
   const match = responseText.match(/^jsonpgz\((.*)\);?$/s);
   if (!match) throw new Error("Invalid fund quote response");
 
-  let raw: Record<string, unknown>;
+  let raw: unknown;
   try {
     raw = JSON.parse(match[1]);
   } catch {
     throw new Error("Invalid fund quote response");
   }
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    throw new Error("Invalid fund quote response");
+  }
 
-  const fundCode = String(raw.fundcode ?? "");
-  const name = String(raw.name ?? "");
+  const payload = raw as Record<string, unknown>;
+
+  const fundCode = String(payload.fundcode ?? "");
+  const name = String(payload.name ?? "");
   if (!/^\d{6}$/.test(fundCode) || !name) {
     throw new Error("Invalid fund quote response");
   }
@@ -26,10 +31,10 @@ export function parseFundQuoteJsonp(responseText: string): FundQuote {
   return {
     fundCode,
     name,
-    jzrq: String(raw.jzrq ?? ""),
-    dwjz: parseNullableNumber(raw.dwjz),
-    gsz: parseNullableNumber(raw.gsz),
-    gszzl: parseNullableNumber(raw.gszzl),
-    gztime: String(raw.gztime ?? ""),
+    jzrq: String(payload.jzrq ?? ""),
+    dwjz: parseNullableNumber(payload.dwjz),
+    gsz: parseNullableNumber(payload.gsz),
+    gszzl: parseNullableNumber(payload.gszzl),
+    gztime: String(payload.gztime ?? ""),
   };
 }
