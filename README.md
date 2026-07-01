@@ -1,25 +1,56 @@
 # Fund Desktop Monitor
 
-深色桌面基金实时盈亏监控工具，支持基金持仓添加、30 秒自动刷新、当日盈亏统计、基金关联股票持仓与实时涨跌查看，并可打包为 Windows exe。
+一个深色科技风的 Windows 桌面基金实时盈亏监控小程序。双击 exe 启动后，它会在本地保存你的持仓信息，并每 30 秒刷新基金盘中估值、当日实时盈亏和关联股票信息。
 
-## 功能
+[下载 Windows 安装版](https://github.com/Cola-Awei/Fund-Desktop-Monitor/releases/latest/download/Fund-Desktop-Monitor-Setup-0.1.0.exe)
+· [查看 Releases](https://github.com/Cola-Awei/Fund-Desktop-Monitor/releases)
 
-- 双击 exe 启动桌面小窗口
-- 深色无边框窗口，可拖动、缩放、最小化
-- 添加基金代码、持有份额、持仓成本单价
+![Fund Desktop Monitor 预览](docs/images/app-preview.png)
+
+> 截图中的基金、金额和股票数据仅用于展示界面效果，不代表真实持仓或投资建议。
+
+## 适合谁
+
+Fund Desktop Monitor 适合想把基金盈亏放在桌面角落里快速查看的人。它不是完整交易软件，也不会替代基金平台的正式收益数据；它更像一个轻量桌面看板，用来在盘中快速观察基金估值变化。
+
+## 核心功能
+
+- 双击 exe 启动，无需手动打开开发服务
+- 深色无边框小窗口，支持拖动、缩放和最小化
+- 右上角添加基金持仓，输入基金代码、持有份额、持仓成本单价
 - 每 30 秒自动刷新基金实时估值
-- 顶部汇总当日实时盈亏
-- 亏损显示绿色，盈利显示红色，符合 A 股常见配色
-- 点击单个基金查看关联股票：
-  - 股票名称和代码
-  - 今日涨跌
-  - 持仓占比
-  - 较上期占比，新进持仓显示“新增”
-- 本地保存持仓信息，不上传到服务器
+- 顶部展示当日实时盈亏汇总
+- 红涨绿跌，符合 A 股常见配色习惯
+- 点击单个基金查看关联股票明细
+- 股票详情包含股票名称、代码、今日涨跌、持仓占比、较上期占比
+- 本地持久化持仓数据，不上传到服务器
 
-## 数据来源与计算
+## 下载安装
 
-基金实时估值来自天天基金 `fundgz.1234567.com.cn` 接口。程序使用接口里的：
+1. 打开 [Releases](https://github.com/Cola-Awei/Fund-Desktop-Monitor/releases)。
+2. 下载 `Fund-Desktop-Monitor-Setup-0.1.0.exe`。
+3. 双击安装程序完成安装。
+4. 启动 Fund Desktop Monitor，在右上角点击添加按钮录入基金。
+
+也可以直接下载最新安装包：
+
+```text
+https://github.com/Cola-Awei/Fund-Desktop-Monitor/releases/latest/download/Fund-Desktop-Monitor-Setup-0.1.0.exe
+```
+
+## 使用方式
+
+添加持仓时只需要填写三项：
+
+- 基金代码：例如 `026211`
+- 持有份额：你当前持有的基金份额
+- 持仓成本单价：你的平均持仓成本
+
+程序会用实时估值和最新单位净值计算当日实时盈亏，并用你的成本单价展示持仓盈亏参考。点击基金卡片可以进入关联股票弹窗，查看该基金披露持仓股票的实时涨跌和持仓占比变化。
+
+## 数据来源与计算口径
+
+基金实时估值来自天天基金公开接口 `fundgz.1234567.com.cn`。程序主要使用：
 
 - `gsz`：实时估值
 - `dwjz`：最新单位净值
@@ -34,9 +65,25 @@
 
 基金关联股票来自东方财富/天天基金基金档案接口，股票实时涨跌来自东方财富行情接口。“较上期占比”按当前报告期持仓占比减上一报告期持仓占比计算；上一期不存在该股票时显示“新增”。
 
-> 注意：盘中估值不是基金公司最终公布净值，仅用于实时参考，最终收益以基金公司公布净值和交易平台数据为准。
+> 盘中估值不是基金公司最终公布净值，仅用于实时参考。最终收益请以基金公司公布净值和交易平台数据为准。
 
-## 开发环境
+## 本地数据
+
+持仓数据只保存在本机 Electron 用户数据目录中，文件名为：
+
+```text
+holdings.json
+```
+
+Windows 上通常位于：
+
+```text
+%APPDATA%/fund-desktop-monitor/holdings.json
+```
+
+删除或清空该文件即可重置本地持仓。
+
+## 开发运行
 
 需要安装 Node.js 18 或更高版本。
 
@@ -45,7 +92,7 @@ npm install
 npm run dev
 ```
 
-## 常用命令
+常用命令：
 
 ```bash
 # 运行测试
@@ -67,21 +114,11 @@ npm run package:installer
 release/win-unpacked/Fund Desktop Monitor.exe
 ```
 
-## 本地数据
-
-持仓数据保存在 Electron 的用户数据目录中，文件名为：
+安装版 exe 位于：
 
 ```text
-holdings.json
+release/Fund Desktop Monitor Setup 0.1.0.exe
 ```
-
-Windows 上通常位于：
-
-```text
-%APPDATA%/fund-desktop-monitor/holdings.json
-```
-
-删除或清空该文件即可重置本地持仓。
 
 ## 技术栈
 
@@ -91,6 +128,12 @@ Windows 上通常位于：
 - Vite
 - Vitest
 - electron-builder
+
+## 版本
+
+当前公开版本：`v0.1.0`
+
+Release 附件提供 Windows 安装版 exe。GitHub 页面中自动生成的 Source code zip/tar.gz 是源码包，不是桌面安装程序。
 
 ## 免责声明
 
