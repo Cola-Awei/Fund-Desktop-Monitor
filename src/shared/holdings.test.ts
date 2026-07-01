@@ -42,6 +42,22 @@ describe("normalizeHoldingInput", () => {
     }
   });
 
+  it("converts current amount and profit mode into shares and cost price", () => {
+    const result = normalizeHoldingInput({
+      mode: "profitAmount",
+      fundCode: "000001",
+      currentAmount: "1654.70",
+      holdingProfit: "154.70",
+      currentPrice: 1.6547
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.holding.shares).toBeCloseTo(1000, 6);
+      expect(result.holding.costPrice).toBeCloseTo(1.5, 6);
+    }
+  });
+
   it("returns field errors for invalid input", () => {
     const result = normalizeHoldingInput({
       mode: "totalAmount",
@@ -54,6 +70,21 @@ describe("normalizeHoldingInput", () => {
       expect(result.errors.fundCode).toBeTruthy();
       expect(result.errors.shares).toBeTruthy();
       expect(result.errors.totalAmount).toBeTruthy();
+    }
+  });
+
+  it("rejects current amount mode when calculated investment is not positive", () => {
+    const result = normalizeHoldingInput({
+      mode: "profitAmount",
+      fundCode: "000001",
+      currentAmount: "100",
+      holdingProfit: "100",
+      currentPrice: 1
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.holdingProfit).toBeTruthy();
     }
   });
 

@@ -1,4 +1,4 @@
-export type CostInputMode = "costPrice" | "totalAmount";
+export type CostInputMode = "costPrice" | "totalAmount" | "profitAmount";
 
 export interface Holding {
   fundCode: string;
@@ -11,9 +11,12 @@ export interface Holding {
 export interface HoldingInput {
   mode: CostInputMode;
   fundCode: string;
-  shares: string;
+  shares?: string;
   costPrice?: string;
   totalAmount?: string;
+  currentAmount?: string;
+  holdingProfit?: string;
+  currentPrice?: number;
 }
 
 export interface HoldingInputErrors {
@@ -21,6 +24,9 @@ export interface HoldingInputErrors {
   shares?: string;
   costPrice?: string;
   totalAmount?: string;
+  currentAmount?: string;
+  holdingProfit?: string;
+  currentPrice?: string;
 }
 
 export type NormalizeHoldingResult =

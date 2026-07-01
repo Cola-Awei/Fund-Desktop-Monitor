@@ -59,6 +59,22 @@ describe("safeNormalizeHoldingInput", () => {
       expect(result.holding.costPrice).toBe(1.62);
     }
   });
+
+  it("normalizes current amount and profit input payloads", () => {
+    const result = safeNormalizeHoldingInput({
+      mode: "profitAmount",
+      fundCode: "000001",
+      currentAmount: "1654.70",
+      holdingProfit: "154.70",
+      currentPrice: 1.6547,
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.holding.shares).toBeCloseTo(1000, 6);
+      expect(result.holding.costPrice).toBeCloseTo(1.5, 6);
+    }
+  });
 });
 
 describe("validateRemoveHoldingFundCode", () => {

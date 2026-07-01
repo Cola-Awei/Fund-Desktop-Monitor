@@ -14,14 +14,14 @@
 body {
   margin: 0;
   min-width: 390px;
-  min-height: 360px;
+  min-height: 330px;
   background: transparent;
   overflow: hidden;
 }
 
 .window-shell {
   width: 390px;
-  min-height: 360px;
+  height: 330px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -323,12 +323,16 @@ footer {
   inset: 0;
   display: grid;
   place-items: center;
-  padding: 18px;
+  padding: 12px;
   background: rgba(0, 0, 0, 0.56);
 }
 
 .dialog {
   width: min(330px, calc(100vw - 36px));
+  max-height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding: 14px;
   border: 1px solid #3b3e49;
   border-radius: 12px;
@@ -337,6 +341,7 @@ footer {
 }
 
 .dialog-title {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -356,8 +361,9 @@ footer {
 }
 
 .mode-switch {
+  flex: 0 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
   margin-bottom: 12px;
@@ -367,17 +373,35 @@ footer {
 }
 
 .mode-switch button {
-  height: 30px;
+  min-height: 30px;
+  height: auto;
+  padding: 6px 4px;
   border-radius: 7px;
   background: transparent;
   color: #8f98aa;
   font-size: 12px;
+  line-height: 1.2;
   transition: background 160ms ease, color 160ms ease;
 }
 
 .mode-switch button.active {
   background: #374054;
   color: #eef3ff;
+}
+
+.dialog-body {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.dialog-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dialog-body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #3a3d46;
 }
 
 .dialog label {
@@ -399,6 +423,13 @@ footer {
   color: #666f80;
 }
 
+.dialog-hint {
+  margin: 2px 0 0;
+  color: #7f8798;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 .field-error {
   margin: 5px 0 0;
   color: #ff8a8a;
@@ -406,9 +437,13 @@ footer {
   line-height: 1.35;
 }
 
+.dialog-actions {
+  flex: 0 0 auto;
+  padding-top: 12px;
+}
+
 .primary-action {
   width: 100%;
-  margin-top: 14px;
 }
 
 .is-spinning {
