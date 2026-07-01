@@ -1,0 +1,20 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: transparent;
+  color: #f4f7fb;
+}
+
+body {
+  margin: 0;
+  min-width: 390px;
+  min-height: 260px;
+  background: transparent;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #202127;
+}
