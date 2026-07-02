@@ -16,6 +16,14 @@ describe("packaging config", () => {
     expect(main).toContain("minHeight:");
   });
 
+  it("keeps the desktop widget above other apps and out of the taskbar", async () => {
+    const main = await readFile("src/main/main.ts", "utf8");
+
+    expect(main).toContain("alwaysOnTop: true");
+    expect(main).toContain("skipTaskbar: true");
+    expect(main).toContain('mainWindow.setAlwaysOnTop(true, "floating")');
+  });
+
   it("sizes the renderer shell from the window viewport", async () => {
     const styles = await readFile("src/renderer/styles.css", "utf8");
 

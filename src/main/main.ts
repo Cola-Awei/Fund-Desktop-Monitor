@@ -25,6 +25,8 @@ function createWindow() {
     minHeight: 260,
     resizable: true,
     frame: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
     transparent: true,
     backgroundColor: "#00000000",
     webPreferences: {
@@ -33,6 +35,8 @@ function createWindow() {
       nodeIntegration: false
     }
   });
+
+  mainWindow.setAlwaysOnTop(true, "floating");
 
   mainWindow.on("close", (event) => {
     if (!app.isQuitting) {

@@ -58,7 +58,6 @@ export function App() {
       setStatusMessage(null);
       setIsManualRefreshing(true);
       setSnapshot(await window.fundApp.refreshNow());
-      setStatusMessage(`已刷新 ${formatClockTime(new Date())}`);
     } catch {
       setStatusMessage("刷新失败");
     } finally {

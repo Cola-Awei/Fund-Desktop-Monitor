@@ -201,7 +201,8 @@ describe("App", () => {
     expect(refreshButton).not.toBeDisabled();
     expect(refreshButton.querySelector("svg")).not.toHaveClass("is-spinning");
     expect(screen.getAllByText("-86.37")).toHaveLength(2);
-    expect(screen.getByText(/已刷新/)).toBeInTheDocument();
+    expect(screen.queryByText(/已刷新/)).not.toBeInTheDocument();
+    expect(screen.getByText(/自动刷新 · 30s · 当前/)).toBeInTheDocument();
   });
 
   it("opens fund stock holdings details from a fund row", async () => {
