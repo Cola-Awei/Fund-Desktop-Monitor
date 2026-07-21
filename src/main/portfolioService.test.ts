@@ -55,6 +55,22 @@ describe("PortfolioService", () => {
     expect(snapshot.holdings[0].error).toBe("network down");
   });
 
+  it("hides technical quote parsing errors from the snapshot", async () => {
+    const service = new PortfolioService(
+      {
+        load: vi.fn().mockResolvedValue([holding]),
+        save: vi.fn().mockResolvedValue(undefined),
+      },
+      vi.fn().mockRejectedValue(new Error("Invalid fund quote response")),
+    );
+
+    await service.load();
+    const snapshot = await service.refreshAll();
+
+    expect(snapshot.holdings[0].status).toBe("error");
+    expect(snapshot.holdings[0].error).toBe("基金估值暂不可用，稍后自动刷新");
+  });
+
   it("reports refreshing while refresh quotes are pending", async () => {
     let resolveQuote: (quote: FundQuote) => void;
     const pendingQuote = new Promise<FundQuote>((resolve) => {

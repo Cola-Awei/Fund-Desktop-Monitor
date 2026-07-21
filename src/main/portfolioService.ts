@@ -4,6 +4,18 @@ import type { HoldingStorage } from "./storage.js";
 
 type QuoteFetcher = (fundCode: string) => Promise<FundQuote>;
 
+function getRefreshErrorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message : "Refresh failed";
+  if (
+    message === "Invalid fund quote response" ||
+    message.startsWith("Fund quote request failed") ||
+    message.startsWith("Mobile fund quote request failed")
+  ) {
+    return "基金估值暂不可用，稍后自动刷新";
+  }
+  return message;
+}
+
 export class PortfolioService {
   private holdings: Holding[] = [];
   private quoteByCode = new Map<string, FundQuote>();
@@ -52,10 +64,7 @@ export class PortfolioService {
             this.quoteByCode.set(holding.fundCode, quote);
             this.errorByCode.delete(holding.fundCode);
           } catch (error) {
-            this.errorByCode.set(
-              holding.fundCode,
-              error instanceof Error ? error.message : "Refresh failed",
-            );
+            this.errorByCode.set(holding.fundCode, getRefreshErrorMessage(error));
           }
         }),
       );

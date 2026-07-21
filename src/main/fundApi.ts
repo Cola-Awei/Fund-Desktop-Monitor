@@ -1,4 +1,4 @@
-import { parseFundQuoteJsonp } from "../shared/fundQuote.js";
+import { parseFundMobileQuoteResponse, parseFundQuoteJsonp } from "../shared/fundQuote.js";
 import {
   mergeFundStockHoldings,
   parseFundStockHoldingsResponse,
@@ -8,6 +8,20 @@ import type { FundQuote, FundStockHoldings } from "../shared/types.js";
 
 export function buildFundQuoteUrl(fundCode: string, now = Date.now()) {
   return `https://fundgz.1234567.com.cn/js/${fundCode}.js?rt=${now}`;
+}
+
+export function buildFundMobileQuoteUrl(fundCode: string) {
+  const params = new URLSearchParams({
+    pageIndex: "1",
+    pageSize: "1",
+    appType: "ttjj",
+    product: "EFund",
+    plat: "Android",
+    deviceid: "fund-desktop-monitor",
+    Version: "1",
+    Fcodes: fundCode,
+  });
+  return `https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo?${params.toString()}`;
 }
 
 export function buildFundStockHoldingsUrl(fundCode: string, year?: number, month?: number) {
@@ -28,11 +42,23 @@ export function buildStockQuoteUrl(marketCodes: string[]) {
 }
 
 export async function fetchFundQuote(fundCode: string): Promise<FundQuote> {
-  const response = await fetch(buildFundQuoteUrl(fundCode));
-  if (!response.ok) {
-    throw new Error(`Fund quote request failed with status ${response.status}`);
+  try {
+    const response = await fetch(buildFundQuoteUrl(fundCode));
+    if (!response.ok) {
+      throw new Error(`Fund quote request failed with status ${response.status}`);
+    }
+    return parseFundQuoteJsonp(await response.text());
+  } catch {
+    try {
+      const fallbackResponse = await fetch(buildFundMobileQuoteUrl(fundCode));
+      if (!fallbackResponse.ok) {
+        throw new Error(`Mobile fund quote request failed with status ${fallbackResponse.status}`);
+      }
+      return parseFundMobileQuoteResponse(fundCode, await fallbackResponse.text());
+    } catch {
+      throw new Error("基金估值暂不可用，稍后自动刷新");
+    }
   }
-  return parseFundQuoteJsonp(await response.text());
 }
 
 function getPreviousQuarter(reportDate: string) {

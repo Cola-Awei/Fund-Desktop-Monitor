@@ -1,6 +1,6 @@
 {
   "name": "fund-desktop-monitor",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Compact desktop fund real-time profit/loss monitor",
   "main": "dist-electron/main/main.js",
   "type": "module",
